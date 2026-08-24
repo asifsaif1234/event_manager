@@ -41,7 +41,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 # For third party API
-gem 'httparty'
+gem "httparty"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -57,7 +57,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # For API'S keys
-  gem 'dotenv-rails'
+  gem "dotenv-rails"
 end
 
 group :development do
