@@ -1,0 +1,43 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event_id: MyString
+  object_type: MyString
+  kind: MyString
+  state: MyString
+  title: MyString
+  description: MyText
+  url: MyString
+  branded_url: MyString
+  image_link: MyString
+  start_date: 2026-08-24 22:51:41
+  end_date: 2026-08-24 22:51:41
+  availability: false
+  price_amount_in_cents: 1
+  price_currency: MyString
+  organiser_data: 
+  location_data: 
+  categorization_data: 
+  organization_data: 
+  headliners_data: 
+
+two:
+  event_id: MyString
+  object_type: MyString
+  kind: MyString
+  state: MyString
+  title: MyString
+  description: MyText
+  url: MyString
+  branded_url: MyString
+  image_link: MyString
+  start_date: 2026-08-24 22:51:41
+  end_date: 2026-08-24 22:51:41
+  availability: false
+  price_amount_in_cents: 1
+  price_currency: MyString
+  organiser_data: 
+  location_data: 
+  categorization_data: 
+  organization_data: 
+  headliners_data: 
