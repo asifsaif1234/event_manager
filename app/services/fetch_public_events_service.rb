@@ -11,8 +11,8 @@ class FetchPublicEventsService
     query_params[:after] = after if after.present?
 
     response = self.class.get(
-      '/public/events',
-      headers: { 'Api-Keypair' => @api_keypair },
+      "/public/events",
+      headers: { "Api-Keypair" => @api_keypair },
       query: query_params
     )
 
@@ -42,7 +42,7 @@ class FetchPublicEventsService
 
     # Add retry info for rate limiting
     if response.code == 429
-      error_response[:retry_after] = response.headers['Retry-After'] || 60
+      error_response[:retry_after] = response.headers["Retry-After"] || 60
     end
 
     error_response
