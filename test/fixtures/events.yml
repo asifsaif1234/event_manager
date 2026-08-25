@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  event_id: MyString
+  event_id: EVENT_001
   object_type: MyString
   kind: MyString
   state: MyString
@@ -22,7 +22,7 @@ one:
   headliners_data: 
 
 two:
-  event_id: MyString
+  event_id: EVENT_002
   object_type: MyString
   kind: MyString
   state: MyString

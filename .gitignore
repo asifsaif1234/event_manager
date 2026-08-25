@@ -38,3 +38,6 @@
 .env.local
 .env.*.local
 
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

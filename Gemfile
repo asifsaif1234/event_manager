@@ -52,6 +52,12 @@ gem "redis"
 # For scheduled jobs (I will schedule 4 hour)
 gem "sidekiq-scheduler"
 
+# Adding due to image processing gem required this
+gem "ruby-vips", "~> 2.0"
+
+# For styling pages
+gem "tailwindcss-rails"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
