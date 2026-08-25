@@ -5,7 +5,7 @@ module Billeto
       query_params[:after] = after if after.present?
 
       response = self.class.get(
-        '/public/events',
+        "/public/events",
         headers: headers,
         query: query_params
       )
@@ -21,19 +21,19 @@ module Billeto
       loop do
         Rails.logger.info "Fetching Billetto events page #{page}..."
         response = fetch_events(limit: 100, after: after)
-        
+
         unless response[:success]
           Rails.logger.error "Failed to fetch page #{page}: #{response[:error]}"
           break
         end
 
-        events = response[:data]['data'] || []
+        events = response[:data]["data"] || []
         break if events.empty?
 
         all_events.concat(events)
-        
-        break unless response[:data]['has_more']
-        after = events.last['id']
+
+        break unless response[:data]["has_more"]
+        after = events.last["id"]
         page += 1
       end
 

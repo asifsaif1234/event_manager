@@ -10,7 +10,7 @@ module Billeto
     def ingest(limit: nil)
       # Get events
       events_data = fetch_events(limit: limit)
-      
+
       # Check for error
       if events_data.is_a?(Hash) && events_data[:error]
         return events_data
@@ -32,7 +32,7 @@ module Billeto
       if limit.present?
         response = events_service.fetch_events(limit: limit)
         return { error: response[:error] } unless response[:success]
-        response[:data]['data'] || []
+        response[:data]["data"] || []
       else
         events_service.fetch_all_events
       end
