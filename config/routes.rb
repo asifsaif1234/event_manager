@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
-  get "events/index"
+  get "/sign_in", to: redirect("https://guiding-grouper-6633.accounts.dev/sign-in")
+  get "/sign_up", to: redirect("https://guiding-grouper-6633.accounts.dev/sign-up")
+  # config/routes.rb
+  # delete '/sign_out', to: 'sessions#destroy'
+  match "/sign_out", to: "sessions#destroy", via: [ :get, :delete ]
+  get "/auth/callback", to: "sessions#create"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
