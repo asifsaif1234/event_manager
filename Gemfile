@@ -56,7 +56,7 @@ gem "sidekiq-scheduler"
 gem "ruby-vips", "~> 2.0"
 
 # For styling pages
-gem 'tailwindcss-rails'
+gem "tailwindcss-rails"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
