@@ -73,6 +73,9 @@ group :development, :test do
 
   # For API'S keys
   gem "dotenv-rails"
+
+  # For debugging
+  gem "pry", "~> 0.15.0"
 end
 
 group :development do

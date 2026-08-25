@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_24_172141) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_094649) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -25,6 +25,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_172141) do
     t.jsonb "headliners_data", default: {}
     t.string "image_link"
     t.string "kind"
+    t.datetime "last_synced_at"
     t.jsonb "location_data", default: {}
     t.string "object_type"
     t.jsonb "organiser_data", default: {}
