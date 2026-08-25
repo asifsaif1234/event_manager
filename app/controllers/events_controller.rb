@@ -1,4 +1,6 @@
 class EventsController < ApplicationController
+  before_action :require_clerk_session!, only: [ :vote ]
+
   def index
     @events = Event.published.upcoming.available
     # Will implement pagination later
@@ -33,5 +35,12 @@ class EventsController < ApplicationController
     else
       render json: { success: false, message: "No ingestion has been run yet" }
     end
+  end
+
+  def vote
+    # This action now requires an authenticated Clerk session
+    # clerk.user contains the authenticated user
+    event = Event.find_by(event_id: params[:event_id])
+    # ... voting logic
   end
 end

@@ -1,0 +1,23 @@
+<!-- app/views/shared/_navbar.html.erb -->
+<nav class="bg-white shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16 items-center">
+      <div class="flex items-center">
+        <%= link_to "EventManager", root_path, class: "text-xl font-bold" %>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <% if clerk.user %>
+          <% current_user = User.find_by(id: session[:user_id]) %>
+          <span class="text-sm"><%= current_user&.first_name || "User" %></span>
+          <%#= link_to "Sign Out", sign_out_path, class: "px-3 py-1.5 text-sm text-red-600 hover:text-red-800" %>
+          <%= link_to 'Sign Out', sign_out_path, class: "px-3 py-1.5 text-sm text-red-600 hover:text-red-800" %>
+          <%#= link_to "Sign Outt", clerk.sign_out_url, allow_other_host: true, data: { turbo: false } %>
+        <% else %>
+          <%= link_to "Sign In", sign_in_path, class: "text-blue-600" %>
+          <%= link_to "Sign Up", sign_up_path, class: "px-4 py-2 bg-blue-600 text-white rounded" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>
