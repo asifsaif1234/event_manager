@@ -1,138 +1,99 @@
+<!-- app/views/events/index.html.erb -->
 <div class="min-h-screen bg-gray-50 py-8">
-  <!-- Header -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
       <div>
         <h1 class="text-3xl font-bold text-gray-900">Upcoming Events</h1>
-        <p class="mt-1 text-sm text-gray-500">
-          <%= @events.count %> events found
-        </p>
+        <p class="text-sm text-gray-500 mt-1"><%= @events.count %> events found</p>
       </div>
-      <div class="flex flex-wrap gap-2">
-        <%= link_to "Sync Recent", ingest_events_path, 
-            method: :post, 
-            data: { turbo_method: :post },  # For Turbo (Rails 7+)
-            class: "px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors" %>
-        <%= link_to "Sync All", ingest_all_events_path, method: :post, 
-            class: "px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors" %>
+      <div class="flex gap-2">
+        <%= button_to "Sync Recent", ingest_events_path, method: :post, 
+            class: "px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors cursor-pointer" %>
       </div>
     </div>
 
-    <!-- Last Ingestion Status -->
-    <% if @last_ingestion %>
-      <div class="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="flex flex-wrap items-center gap-4 text-sm">
-          <span class="text-gray-600">
-            Last sync: <%= time_ago_in_words(@last_ingestion[:timestamp]) %> ago
-          </span>
-          <span class="text-green-600">Created: <%= @last_ingestion[:result][:created] %></span>
-          <span class="text-blue-600">Updated: <%= @last_ingestion[:result][:updated] %></span>
-          <% if @last_ingestion[:result][:failed] > 0 %>
-            <span class="text-red-600">Failed: <%= @last_ingestion[:result][:failed] %></span>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <!-- Flash Messages -->
-    <% if flash[:notice] %>
-      <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-        <%= flash[:notice] %>
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Event Grid -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Event Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <% @events.each do |event| %>
-        <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
+        <% user_vote = @user_votes&.dig(event.id) %>
+        
+        <div class="event-card bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden" data-event-id="<%= event.id %>">
           <!-- Image Section -->
-          <div class="relative h-48 overflow-hidden">
+          <div class="relative h-48 overflow-hidden bg-gray-100">
             <% if event.image_link.present? %>
-              <img 
-                src="<%= event.image_link %>" 
-                alt="<%= event.title %>"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              >
+              <img src="<%= event.image_link %>" alt="<%= event.title %>" class="w-full h-full object-cover">
             <% else %>
-              <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                <span class="text-gray-400">No image</span>
-              </div>
+              <div class="w-full h-full flex items-center justify-center text-gray-400">No image</div>
             <% end %>
             
-            <!-- Category Badge -->
-            <span class="absolute top-3 right-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-gray-700 shadow-sm">
+            <span class="absolute top-3 right-3 px-3 py-1 bg-white/90 rounded-full text-xs font-semibold text-gray-700">
               <%= event.category || "Uncategorized" %>
             </span>
-            
-            <!-- Price Badge -->
-            <span class="absolute bottom-3 left-3 px-3 py-1 bg-green-500 text-white rounded-full text-xs font-semibold shadow-md">
+            <span class="absolute bottom-3 left-3 px-3 py-1 bg-green-500 text-white rounded-full text-xs font-semibold">
               <%= event.formatted_price %>
             </span>
           </div>
 
           <!-- Content Section -->
           <div class="p-5">
-            <!-- Title -->
             <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-2">
-              <%= link_to event.title, "#", class: "hover:text-blue-600 transition-colors" %>
+              <%= link_to event.title, "#", class: "hover:text-blue-600" %>
             </h3>
 
-            <!-- Location -->
             <div class="flex items-center text-sm text-gray-500 mb-2">
-              <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
               <span class="truncate"><%= event.location_name || "No location" %></span>
             </div>
 
-            <!-- Date -->
             <div class="flex items-center text-sm text-gray-500 mb-3">
-              <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
-              <span>
-                <%= event.start_date.strftime("%b %d, %Y • %I:%M %p") %>
-              </span>
+              <span><%= event.start_date.strftime("%b %d, %Y • %I:%M %p") %></span>
             </div>
 
-            <!-- Description -->
             <p class="text-sm text-gray-600 mb-4 line-clamp-2">
               <%= truncate(event.description, length: 100) if event.description.present? %>
             </p>
 
-            <!-- Divider -->
+            <!-- Voting Section -->
             <div class="border-t border-gray-100 pt-4">
-              <!-- Vote Buttons -->
               <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                  <!-- Like Button -->
+                <div class="flex items-center space-x-1">
+                  <!-- Upvote Button -->
                   <button 
-                    class="vote-btn like-btn flex items-center space-x-1 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-green-100 transition-colors duration-200 text-gray-600 hover:text-green-600"
-                    data-event-id="<%= event.event_id %>"
-                    data-vote-type="like"
+                    class="vote-btn upvote-btn flex items-center space-x-1 px-3 py-1.5 rounded-full transition-all duration-200 
+                      <%= user_vote&.vote_type == 'upvote' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-600' %>"
+                    data-event-id="<%= event.id %>"
+                    data-vote-type="upvote"
+                    data-authenticated="<%= user_signed_in? %>"
                   >
-                    <span class="text-lg">👍</span>
-                    <span class="like-count text-sm font-medium">0</span>
+                    <span class="text-base">👍</span>
+                    <span class="vote-count upvote-count text-sm font-medium"><%= event.upvotes_count %></span>
                   </button>
 
-                  <!-- Dislike Button -->
+                  <!-- Downvote Button -->
                   <button 
-                    class="vote-btn dislike-btn flex items-center space-x-1 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-red-100 transition-colors duration-200 text-gray-600 hover:text-red-600"
-                    data-event-id="<%= event.event_id %>"
-                    data-vote-type="dislike"
+                    class="vote-btn downvote-btn flex items-center space-x-1 px-3 py-1.5 rounded-full transition-all duration-200 
+                      <%= user_vote&.vote_type == 'downvote' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600' %>"
+                    data-event-id="<%= event.id %>"
+                    data-vote-type="downvote"
+                    data-authenticated="<%= user_signed_in? %>"
                   >
-                    <span class="text-lg">👎</span>
-                    <span class="dislike-count text-sm font-medium">0</span>
+                    <span class="text-base">👎</span>
+                    <span class="vote-count downvote-count text-sm font-medium"><%= event.downvotes_count %></span>
                   </button>
+
+                  <!-- Score -->
+                  <span class="vote-score text-sm font-semibold text-gray-500 ml-2 min-w-[20px] text-center">
+                    <%= event.total_score %>
+                  </span>
                 </div>
 
-                <!-- View Details Link -->
-                <%= link_to "Show", class: "text-sm text-blue-600 hover:text-blue-800 font-medium" do %>
-                  Details →
-                <% end %>
+                <%= link_to "Details →", "#", class: "text-sm text-blue-600 hover:text-blue-800 font-medium" %>
               </div>
             </div>
           </div>
@@ -145,108 +106,166 @@
       <div class="text-center py-12">
         <div class="text-6xl mb-4">🎫</div>
         <h3 class="text-xl font-medium text-gray-900 mb-2">No events found</h3>
-        <p class="text-gray-500 mb-4">Click "Sync Events" to fetch events from Billetto</p>
-        <%= link_to "Sync Events", ingest_events_path, method: :post, 
-            class: "px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors" %>
+        <p class="text-gray-500">Click "Sync Events" to fetch events from Billetto</p>
       </div>
     <% end %>
   </div>
-
-  <!-- Pagination -->
-  <%# if @events.total_pages > 1 %>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-      <div class="flex justify-center">
-        <%#= paginate @events, window: 2, theme: 'tailwind' %>
-      </div>
-    </div>
-  <%# end %>
 </div>
 
-<!-- Custom Styles -->
 <style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .vote-btn.voted {
-    transform: scale(1.05);
-  }
-  
-  .vote-btn.like-btn.voted {
-    background-color: #d1fae5;
-    color: #065f46;
-  }
-  
-  .vote-btn.dislike-btn.voted {
-    background-color: #fee2e2;
-    color: #991b1b;
-  }
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .vote-btn { cursor: pointer; user-select: none; transition: all 0.15s ease; }
+  .vote-btn:active { transform: scale(0.92); }
+  .vote-btn.voted { transform: scale(1.05); }
+  .event-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .event-card:hover { transform: translateY(-2px); }
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .toast-message { animation: slideUp 0.3s ease-out; }
 </style>
 
-<!-- JavaScript for Voting -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const voteButtons = document.querySelectorAll('.vote-btn');
-    
-    voteButtons.forEach(button => {
-      button.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        const card = this.closest('.bg-white');
-        const likeCount = card.querySelector('.like-count');
-        const dislikeCount = card.querySelector('.dislike-count');
-        const likeBtn = card.querySelector('.like-btn');
-        const dislikeBtn = card.querySelector('.dislike-btn');
-        
-        let likes = parseInt(likeCount.textContent) || 0;
-        let dislikes = parseInt(dislikeCount.textContent) || 0;
-        
-        if (this.classList.contains('voted')) {
-          if (this === likeBtn) {
-            likes = Math.max(0, likes - 1);
-          } else {
-            dislikes = Math.max(0, dislikes - 1);
-          }
-          this.classList.remove('voted');
-        } else {
-          if (this === likeBtn) {
-            if (dislikeBtn.classList.contains('voted')) {
-              dislikes = Math.max(0, dislikes - 1);
-              dislikeBtn.classList.remove('voted');
-            }
-            likes += 1;
-          } else {
-            if (likeBtn.classList.contains('voted')) {
-              likes = Math.max(0, likes - 1);
-              likeBtn.classList.remove('voted');
-            }
-            dislikes += 1;
-          }
-          this.classList.add('voted');
+    voteButtons.forEach(btn => btn.addEventListener('click', handleVoteClick));
+
+    async function handleVoteClick(e) {
+      e.preventDefault();
+      const button = this;
+      const eventId = button.dataset.eventId;
+      const voteType = button.dataset.voteType;
+      const isAuthenticated = button.dataset.authenticated === 'true';
+      
+      const card = button.closest('.event-card, .bg-white');
+      if (!card) return;
+
+      button.disabled = true;
+      button.style.opacity = '0.6';
+
+      try {
+        if (!isAuthenticated) {
+          showLoginPrompt();
+          button.disabled = false;
+          button.style.opacity = '1';
+          return;
         }
-        
-        likeCount.textContent = likes;
-        dislikeCount.textContent = dislikes;
-        
-        showToast(`${this === likeBtn ? '👍 Liked' : '👎 Disliked'} event`);
-      });
-    });
-    
-    function showToast(message) {
+
+        const upvoteBtn = card.querySelector('.upvote-btn');
+        const downvoteBtn = card.querySelector('.downvote-btn');
+        const upvoteCount = card.querySelector('.upvote-count');
+        const downvoteCount = card.querySelector('.downvote-count');
+        const scoreElement = card.querySelector('.vote-score');
+
+        // Get current state
+        const upvotes = upvoteCount ? parseInt(upvoteCount.textContent) || 0 : 0;
+        const downvotes = downvoteCount ? parseInt(downvoteCount.textContent) || 0 : 0;
+        let currentUserVote = null;
+        if (upvoteBtn && upvoteBtn.classList.contains('bg-green-100')) currentUserVote = 'upvote';
+        else if (downvoteBtn && downvoteBtn.classList.contains('bg-red-100')) currentUserVote = 'downvote';
+
+        // Optimistic update
+        let optimisticUpvotes = upvotes, optimisticDownvotes = downvotes, optimisticUserVote = currentUserVote;
+        if (currentUserVote === voteType) {
+          if (voteType === 'upvote') { optimisticUpvotes = Math.max(0, optimisticUpvotes - 1); optimisticUserVote = null; }
+          else { optimisticDownvotes = Math.max(0, optimisticDownvotes - 1); optimisticUserVote = null; }
+        } else if (currentUserVote === null) {
+          if (voteType === 'upvote') { optimisticUpvotes += 1; optimisticUserVote = 'upvote'; }
+          else { optimisticDownvotes += 1; optimisticUserVote = 'downvote'; }
+        } else {
+          if (voteType === 'upvote') { optimisticUpvotes += 1; optimisticDownvotes = Math.max(0, optimisticDownvotes - 1); optimisticUserVote = 'upvote'; }
+          else { optimisticDownvotes += 1; optimisticUpvotes = Math.max(0, optimisticUpvotes - 1); optimisticUserVote = 'downvote'; }
+        }
+
+        if (upvoteCount) upvoteCount.textContent = optimisticUpvotes;
+        if (downvoteCount) downvoteCount.textContent = optimisticDownvotes;
+        if (scoreElement) scoreElement.textContent = optimisticUpvotes - optimisticDownvotes;
+
+        if (upvoteBtn) { upvoteBtn.classList.remove('bg-green-100', 'text-green-700'); upvoteBtn.classList.add('bg-gray-100', 'text-gray-600'); }
+        if (downvoteBtn) { downvoteBtn.classList.remove('bg-red-100', 'text-red-700'); downvoteBtn.classList.add('bg-gray-100', 'text-gray-600'); }
+        if (optimisticUserVote === 'upvote' && upvoteBtn) { upvoteBtn.classList.add('bg-green-100', 'text-green-700'); }
+        else if (optimisticUserVote === 'downvote' && downvoteBtn) { downvoteBtn.classList.add('bg-red-100', 'text-red-700'); }
+
+        // Send request
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        const response = await fetch(`/events/${eventId}/vote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+          body: JSON.stringify({ vote_type: voteType })
+        });
+
+        const data = await response.json();
+
+        if (data.error === 'login_required') {
+          showLoginPrompt();
+          if (upvoteCount) upvoteCount.textContent = upvotes;
+          if (downvoteCount) downvoteCount.textContent = downvotes;
+          if (scoreElement) scoreElement.textContent = upvotes - downvotes;
+          if (upvoteBtn) { upvoteBtn.classList.remove('bg-green-100', 'text-green-700'); upvoteBtn.classList.add('bg-gray-100', 'text-gray-600'); }
+          if (downvoteBtn) { downvoteBtn.classList.remove('bg-red-100', 'text-red-700'); downvoteBtn.classList.add('bg-gray-100', 'text-gray-600'); }
+          if (currentUserVote === 'upvote' && upvoteBtn) upvoteBtn.classList.add('bg-green-100', 'text-green-700');
+          else if (currentUserVote === 'downvote' && downvoteBtn) downvoteBtn.classList.add('bg-red-100', 'text-red-700');
+          button.disabled = false; button.style.opacity = '1'; return;
+        }
+
+        if (data.success) {
+          if (upvoteCount) upvoteCount.textContent = data.upvotes;
+          if (downvoteCount) downvoteCount.textContent = data.downvotes;
+          if (scoreElement) scoreElement.textContent = data.total_score;
+          if (upvoteBtn) { upvoteBtn.classList.remove('bg-green-100', 'text-green-700'); upvoteBtn.classList.add('bg-gray-100', 'text-gray-600'); }
+          if (downvoteBtn) { downvoteBtn.classList.remove('bg-red-100', 'text-red-700'); downvoteBtn.classList.add('bg-gray-100', 'text-gray-600'); }
+          if (data.user_vote === 'upvote' && upvoteBtn) upvoteBtn.classList.add('bg-green-100', 'text-green-700');
+          else if (data.user_vote === 'downvote' && downvoteBtn) downvoteBtn.classList.add('bg-red-100', 'text-red-700');
+          if (data.message) showToast(data.message, 'success');
+        } else {
+          if (upvoteCount) upvoteCount.textContent = upvotes;
+          if (downvoteCount) downvoteCount.textContent = downvotes;
+          if (scoreElement) scoreElement.textContent = upvotes - downvotes;
+          if (upvoteBtn) { upvoteBtn.classList.remove('bg-green-100', 'text-green-700'); upvoteBtn.classList.add('bg-gray-100', 'text-gray-600'); }
+          if (downvoteBtn) { downvoteBtn.classList.remove('bg-red-100', 'text-red-700'); downvoteBtn.classList.add('bg-gray-100', 'text-gray-600'); }
+          if (currentUserVote === 'upvote' && upvoteBtn) upvoteBtn.classList.add('bg-green-100', 'text-green-700');
+          else if (currentUserVote === 'downvote' && downvoteBtn) downvoteBtn.classList.add('bg-red-100', 'text-red-700');
+          showToast(data.message || 'Something went wrong', 'error');
+        }
+      } catch (error) {
+        showToast('Network error. Please try again.', 'error');
+      } finally {
+        button.disabled = false;
+        button.style.opacity = '1';
+      }
+    }
+
+    function showLoginPrompt() {
+      const existing = document.querySelector('.login-modal');
+      if (existing) existing.remove();
+      const modal = document.createElement('div');
+      modal.className = 'login-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn';
+      modal.innerHTML = `
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+          <div class="text-center">
+            <div class="text-5xl mb-4">🔒</div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Sign In Required</h2>
+            <p class="text-gray-600 mb-6">You need to sign in to vote on events.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <a href="/sign_in" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-colors">Sign In</a>
+              <a href="/sign_up" class="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-center font-medium transition-colors">Sign Up</a>
+              <button onclick="this.closest('.login-modal').remove()" class="px-4 py-2 text-gray-500 hover:text-gray-700 transition-colors">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+      modal.addEventListener('click', function(e) { if (e.target === this) this.remove(); });
+      document.body.appendChild(modal);
+    }
+
+    function showToast(message, type = 'success') {
+      document.querySelectorAll('.toast-message').forEach(el => el.remove());
+      const colors = { success: 'bg-green-600', warning: 'bg-yellow-600', error: 'bg-red-600', info: 'bg-blue-600' };
       const toast = document.createElement('div');
-      toast.className = 'fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg transition-opacity duration-500 z-50';
+      toast.className = `toast-message fixed bottom-4 right-4 ${colors[type] || 'bg-gray-900'} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
       toast.textContent = message;
       document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => {
-          toast.remove();
-        }, 500);
-      }, 2000);
+      setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
     }
   });
 </script>

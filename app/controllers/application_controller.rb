@@ -8,6 +8,13 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  def authenticate_user!
+    unless user_signed_in?
+      session[:return_to] = request.fullpath
+      redirect_to root_path, alert: "Please sign in to vote."
+    end
+  end
+
   def current_user
     @current_user ||= begin
       if clerk.user.present?
@@ -25,14 +32,10 @@ class ApplicationController < ActionController::Base
   end
 
   def sign_in_path
-    "/sign_in"
+    ENV["CLERK_SIGN_IN_URL"] || "/sign_in"
   end
 
   def sign_up_path
-    "/sign_up"
-  end
-
-  def sign_out_path
-    "/sign_out"
+    ENV["CLERK_SIGN_UP_URL"] || "/sign_up"
   end
 end
