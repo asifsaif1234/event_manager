@@ -2,7 +2,7 @@
 require "clerk"
 
 Clerk.configure do |config|
-  config.secret_key = ENV["CLERK_SECRET_KEY"]
+  config.secret_key = ENV.fetch("CLERK_SECRET_KEY", "test_secret_key_placeholder")
   config.publishable_key = ENV["CLERK_PUBLISHABLE_KEY"]
 end
 
