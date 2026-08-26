@@ -157,7 +157,7 @@ RSpec.describe Event, type: :model do
         event = create(:event)
         user1 = create(:user)
         user2 = create(:user)
-        
+
         create(:vote, user: user1, event: event, vote_type: "upvote")
         create(:vote, user: user2, event: event, vote_type: "downvote")
 
