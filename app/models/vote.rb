@@ -8,13 +8,12 @@ class Vote < ApplicationRecord
   scope :upvotes, -> { where(vote_type: "upvote") }
   scope :downvotes, -> { where(vote_type: "downvote") }
 
-  after_create :update_event_counts, :publish_vote_event
-  after_destroy :update_event_counts, :publish_vote_removed_event
+  after_create :publish_vote_event
+  after_destroy :publish_vote_removed_event
 
    private
 
   def publish_vote_event
-    # Use reload to ensure associations are loaded
     user = self.user
     event = self.event
 

@@ -1,7 +1,7 @@
 class Event < ApplicationRecord
   VALID_STATES = %w[published draft scheduled cancelled].freeze
 
-  has_many :votes, dependent: :destroy
+  has_many :votes, dependent: :destroy, counter_cache: :upvotes_count
   has_many :users, through: :votes
 
   validates :event_id, presence: true, uniqueness: true
@@ -49,9 +49,12 @@ class Event < ApplicationRecord
   end
 
    def update_votes_count
+    upvote_count = votes.where(vote_type: "upvote").count
+    downvote_count = votes.where(vote_type: "downvote").count
+
     update_columns(
-      upvotes_count: votes.upvotes.count,
-      downvotes_count: votes.downvotes.count
+      upvotes_count: upvote_count,
+      downvotes_count: downvote_count
     )
   end
 
