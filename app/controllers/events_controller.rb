@@ -63,18 +63,24 @@ class EventsController < ApplicationController
       end
 
       existing = current_user.votes.find_by(event: event)
+      action = nil
 
-      if existing.nil?
-        Vote.create!(user: current_user, event: event, vote_type: vote_type)
-        action = "created"
-      elsif existing.vote_type == vote_type
-        existing.destroy!
-        action = "removed"
-      else
-        existing.update!(vote_type: vote_type)
-        action = "changed"
+      ActiveRecord::Base.transaction do
+        if existing.nil?
+          Vote.create!(user: current_user, event: event, vote_type: vote_type)
+          action = "created"
+        elsif existing.vote_type == vote_type
+          existing.destroy!
+          action = "removed"
+        else
+          existing.update!(vote_type: vote_type)
+          action = "changed"
+        end
+
+        # FIX: Force accurate counts for BOTH upvotes and downvotes
+        event.update_votes_count
+        event.reload # Reload to get the freshest data from the DB
       end
-
       render json: {
         success: true,
         upvotes: event.upvotes_count,

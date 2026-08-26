@@ -8,3 +8,14 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.vote-btn { cursor: pointer; user-select: none; transition: all 0.15s ease; }
+.vote-btn:active { transform: scale(0.92); }
+.vote-btn.voted { transform: scale(1.05); }
+.event-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.event-card:hover { transform: translateY(-2px); }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.toast-message { animation: slideUp 0.3s ease-out; }
