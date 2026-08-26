@@ -75,13 +75,14 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_USER: saiful
+          POSTGRES_PASSWORD: ""
           POSTGRES_DB: event_manager_test
           POSTGRES_INITDB_ARGS: "--auth-local=trust"
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres"
+          --health-cmd="pg_isready -U saiful"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -98,17 +99,26 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -U saiful; do
+            echo 'waiting for postgres...'
+            sleep 1
+          done
+
       - name: Prepare database
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgresql://postgres@localhost:5432/event_manager_test
+          DATABASE_URL: postgresql://saiful@localhost:5432/event_manager_test
           CLERK_SECRET_KEY: "test_secret_key_placeholder"
-        run: bin/rails db:test:prepare
+        run: |
+          bin/rails db:create
+          bin/rails db:schema:load
 
       - name: Run RSpec tests
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgresql://postgres@localhost:5432/event_manager_test
+          DATABASE_URL: postgresql://saiful@localhost:5432/event_manager_test
           CLERK_SECRET_KEY: "test_secret_key_placeholder"
         run: bundle exec rspec
 
@@ -119,13 +129,14 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_USER: saiful
+          POSTGRES_PASSWORD: ""
           POSTGRES_DB: event_manager_test
           POSTGRES_INITDB_ARGS: "--auth-local=trust"
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres"
+          --health-cmd="pg_isready -U saiful"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -142,12 +153,28 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -U saiful; do
+            echo 'waiting for postgres...'
+            sleep 1
+          done
+
       - name: Prepare database
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgresql://postgres@localhost:5432/event_manager_test
+          DATABASE_URL: postgresql://saiful@localhost:5432/event_manager_test
           CLERK_SECRET_KEY: "test_secret_key_placeholder"
-        run: bin/rails db:test:prepare
+        run: |
+          bin/rails db:create
+          bin/rails db:schema:load
+
+      - name: Run system tests
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgresql://saiful@localhost:5432/event_manager_test
+          CLERK_SECRET_KEY: "test_secret_key_placeholder"
+        run: bundle exec rspec --pattern spec/system/**/*_spec.rb
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
