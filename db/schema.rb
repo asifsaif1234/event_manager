@@ -10,9 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_132133) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_165201) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "event_store_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.binary "data", null: false
+    t.uuid "event_id", null: false
+    t.string "event_type", null: false
+    t.binary "metadata"
+    t.datetime "valid_at"
+    t.index "COALESCE(valid_at, created_at)", name: "index_event_store_events_on_as_of"
+    t.index ["created_at"], name: "index_event_store_events_on_created_at"
+    t.index ["event_id"], name: "index_event_store_events_on_event_id", unique: true
+    t.index ["event_type"], name: "index_event_store_events_on_event_type"
+    t.index ["valid_at"], name: "index_event_store_events_on_valid_at"
+  end
+
+  create_table "event_store_events_in_streams", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "event_id", null: false
+    t.integer "position"
+    t.string "stream", null: false
+    t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
+    t.index ["event_id"], name: "index_event_store_events_in_streams_on_event_id"
+    t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
+    t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
+  end
 
   create_table "events", force: :cascade do |t|
     t.boolean "availability"
@@ -20,6 +45,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_132133) do
     t.jsonb "categorization_data", default: {}
     t.datetime "created_at", null: false
     t.text "description"
+    t.integer "downvotes_count", default: 0, null: false
     t.datetime "end_date"
     t.string "event_id", null: false
     t.jsonb "headliners_data", default: {}
@@ -36,6 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_132133) do
     t.string "state", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
+    t.integer "upvotes_count", default: 0, null: false
     t.string "url"
     t.index "((categorization_data ->> 'category'::text))", name: "index_events_on_category"
     t.index "((location_data ->> 'city'::text))", name: "index_events_on_city"
@@ -73,4 +100,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_132133) do
     t.index ["last_sign_in_at"], name: "index_users_on_last_sign_in_at"
     t.index ["status"], name: "index_users_on_status"
   end
+
+  create_table "votes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "event_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.string "vote_type", null: false
+    t.index ["event_id"], name: "index_votes_on_event_id"
+    t.index ["user_id"], name: "index_votes_on_user_id"
+  end
+
+  add_foreign_key "event_store_events_in_streams", "event_store_events", column: "event_id", primary_key: "event_id"
+  add_foreign_key "votes", "events"
+  add_foreign_key "votes", "users"
 end

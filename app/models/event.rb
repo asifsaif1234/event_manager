@@ -1,6 +1,9 @@
 class Event < ApplicationRecord
   VALID_STATES = %w[published draft scheduled cancelled].freeze
 
+  has_many :votes, dependent: :destroy
+  has_many :users, through: :votes
+
   validates :event_id, presence: true, uniqueness: true
   validates :title, presence: true, length: { minimum: 2, maximum: 255 }
   validates :start_date, presence: true
@@ -43,6 +46,25 @@ class Event < ApplicationRecord
       location_data["city"],
       location_data["country"]
     ].compact.reject(&:blank?).join(", ")
+  end
+
+   def update_votes_count
+    update_columns(
+      upvotes_count: votes.upvotes.count,
+      downvotes_count: votes.downvotes.count
+    )
+  end
+
+  def total_score
+    upvotes_count - downvotes_count
+  end
+
+  def user_vote(user)
+    votes.find_by(user: user) if user
+  end
+
+  def user_voted?(user)
+    user_vote(user).present?
   end
 
   private
