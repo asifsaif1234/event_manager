@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -48,7 +48,7 @@ jobs:
       RUBOCOP_CACHE_ROOT: tmp/rubocop
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -56,7 +56,7 @@ jobs:
           bundler-cache: true
 
       - name: Prepare RuboCop cache
-        uses: actions/cache@v6
+        uses: actions/cache@v4
         env:
           DEPENDENCIES_HASH: ${{ hashFiles('.ruby-version', '**/.rubocop.yml', '**/.rubocop_todo.yml', 'Gemfile.lock') }}
         with:
@@ -81,31 +81,13 @@ jobs:
           - 5432:5432
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
-      # redis:
-      #   image: valkey/valkey:8
-      #   ports:
-      #     - 6379:6379
-      #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev libvips
 
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
-      # - name: Set up Ruby
-      #   uses: ruby/setup-ruby@v1
-      #   with:
-      #     bundler-cache: true
-
-      # - name: Run tests
-      #   env:
-      #     RAILS_ENV: test
-      #     DATABASE_URL: postgres://postgres:postgres@localhost:5432/event_manager_test
-      #     # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-      #     # REDIS_URL: redis://localhost:6379/0
-      #   run: bin/rails db:test:prepare test
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -115,12 +97,14 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/event_manager_test
+          CLERK_SECRET_KEY: "test_secret_key_placeholder"  # <--- ADD THIS
         run: bin/rails db:test:prepare
 
       - name: Run RSpec tests
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/event_manager_test
+          CLERK_SECRET_KEY: "test_secret_key_placeholder"  # <--- ADD THIS
         run: bundle exec rspec
 
   system-test:
@@ -136,18 +120,12 @@ jobs:
           - 5432:5432
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
-      # redis:
-      #   image: valkey/valkey:8
-      #   ports:
-      #     - 6379:6379
-      #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev libvips
 
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -158,18 +136,18 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/event_manager_test
+          CLERK_SECRET_KEY: "test_secret_key_placeholder"  # <--- ADD THIS
         run: bin/rails db:test:prepare
 
       # - name: Run System Tests
       #   env:
       #     RAILS_ENV: test
       #     DATABASE_URL: postgres://postgres:postgres@localhost:5432/event_manager_test
-      #     # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-      #     # REDIS_URL: redis://localhost:6379/0
+      #     CLERK_SECRET_KEY: "test_secret_key_placeholder"  # <--- ADD THIS
       #   run: bin/rails db:test:prepare test
 
       - name: Keep screenshots from failed system tests
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: screenshots
