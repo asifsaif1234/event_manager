@@ -3,29 +3,11 @@ class User < ApplicationRecord
   has_many :events, through: :votes
 
   validates :clerk_id, presence: true, uniqueness: true
-  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-
-  scope :active_users, -> { where(status: :active) }
-  scope :recently_signed_in, -> { where("last_signed_in_at > ?", 7.days.ago) }
+  # Romove Regex and case sesitive because clerk handle this is just aad in DB
+  validates :email, presence: true
 
   def display_name
-    name.presence || email.split("@").first
-  end
-
-  def active?
-    status == "active"
-  end
-
-  def voted_for?(event)
-    votes.exists?(event: event)
-  end
-
-  def vote_for(event)
-    votes.find_by(event: event)
-  end
-
-  def record_sign_in!
-    update_column(:last_signed_in_at, Time.current)
+    first_name.presence || email.split("@").first
   end
 
   def self.find_or_create_from_clerk(clerk_user)

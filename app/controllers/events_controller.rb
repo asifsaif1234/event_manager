@@ -44,65 +44,23 @@ class EventsController < ApplicationController
   end
 
   def vote
-    unless user_signed_in?
-      render json: {
-        success: false,
-        error: "login_required",
-        message: "Please sign in to vote"
-      }, status: :unauthorized
-      return
-    end
+    event = Event.find(params[:id])
+    result = VoteRecorder.new(user: current_user, event: event, vote_type: params[:vote_type]).call
 
-    begin
-      event = Event.find(params[:id])
-      vote_type = params[:vote_type]
-
-      unless %w[upvote downvote].include?(vote_type)
-        render json: { success: false, error: "Invalid vote type" }, status: :unprocessable_entity
-        return
-      end
-
-      existing = current_user.votes.find_by(event: event)
-      action = nil
-
-      ActiveRecord::Base.transaction do
-        if existing.nil?
-          Vote.create!(user: current_user, event: event, vote_type: vote_type)
-          action = "created"
-        elsif existing.vote_type == vote_type
-          existing.destroy!
-          action = "removed"
-        else
-          existing.update!(vote_type: vote_type)
-          action = "changed"
-        end
-
-        # FIX: Force accurate counts for BOTH upvotes and downvotes
-        event.update_votes_count
-        event.reload # Reload to get the freshest data from the DB
-      end
-      render json: {
-        success: true,
-        upvotes: event.upvotes_count,
-        downvotes: event.downvotes_count,
-        total_score: event.total_score,
-        user_vote: event.user_vote(current_user)&.vote_type,
-        action: action,
-        message: vote_message(action, vote_type)
-      }
-    rescue => e
-      render json: { success: false, error: e.message }, status: :unprocessable_entity
-    end
-  end
-
-  private
-
-  def vote_message(action, vote_type)
-    case action
-    when "created" then "#{vote_type} added!"
-    when "removed" then "#{vote_type} removed!"
-    when "changed" then "Vote changed to #{vote_type}!"
-    else "Vote updated!"
-    end
+    render json: {
+      success: true,
+      upvotes: result.event.upvotes_count,
+      downvotes: result.event.downvotes_count,
+      total_score: result.event.total_score,
+      user_vote: result.user_vote,
+      action: result.action,
+      message: vote_message(result.action, params[:vote_type])
+    }
+  rescue VoteRecorder::InvalidVoteType => e
+    render json: { success: false, error: e.message }, status: :unprocessable_entity
+  rescue ActiveRecord::RecordNotFound
+    render json: { success: false, error: "Event not found" }, status: :not_found
+  rescue => e
+    render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
 end
