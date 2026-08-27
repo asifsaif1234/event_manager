@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     collection do
       post :ingest
       post :ingest_all
+      get :sync_status
     end
     member do
       post :vote
