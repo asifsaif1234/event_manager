@@ -2,6 +2,8 @@ module Billeto
   class BaseService
     include HTTParty
 
+    attr_reader :api_keypair, :base_url
+
     def initialize
       @api_keypair = Rails.application.config.billetto[:api_keypair]
       @base_url = Rails.application.config.billetto[:base_url]
@@ -12,7 +14,7 @@ module Billeto
 
     def headers
       {
-        "Api-Keypair" => @api_keypair,
+        "Api-Keypair" => api_keypair,
         "Content-Type" => "application/json"
       }
     end

@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   def authenticate_user!
     unless user_signed_in?
       session[:return_to] = request.fullpath
-      redirect_to root_path, alert: "Please sign in to vote."
+      redirect_to root_path, alert: "Please sign in to vote." and return
     end
   end
 

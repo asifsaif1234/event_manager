@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
     if clerk.user.present?
       user = User.find_or_create_from_clerk(clerk.user)
       session[:user_id] = user.id
-      redirect_to root_path, notice: "Welcome, #{user.name}!"
+      redirect_to root_path, notice: "Welcome, #{user&.first_name}!"
     else
       redirect_to "/sign_in", alert: "Sign in failed. Please try again."
     end

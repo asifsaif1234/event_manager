@@ -29,4 +29,6 @@ Rails.application.routes.draw do
       post :vote
     end
   end
+  # For test caese
+  resource :session, only: [ :create, :destroy ]
 end

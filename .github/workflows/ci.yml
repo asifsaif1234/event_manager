@@ -151,7 +151,7 @@ jobs:
           RAILS_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/event_manager_test
           CLERK_SECRET_KEY: "sk_test_placeholder_key_12345"
-          CLERK_PUBLISHABLE_KEY: "pk_test_placeholder_key_12345"  # <--- ADD THIS
+          CLERK_PUBLISHABLE_KEY: "pk_test_placeholder_key_12345"
         run: |
           bin/rails db:create
           bin/rails db:schema:load
@@ -161,7 +161,7 @@ jobs:
           RAILS_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/event_manager_test
           CLERK_SECRET_KEY: "sk_test_placeholder_key_12345"
-          CLERK_PUBLISHABLE_KEY: "pk_test_placeholder_key_12345"  # <--- ADD THIS
+          CLERK_PUBLISHABLE_KEY: "pk_test_placeholder_key_12345"
         run: bundle exec rspec --pattern spec/system/**/*_spec.rb
 
       - name: Keep screenshots from failed system tests
