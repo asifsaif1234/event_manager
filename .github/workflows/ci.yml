@@ -75,7 +75,7 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_USER: postgres  # Change to 'postgres' (standard user)
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: event_manager_test
         ports:
@@ -102,7 +102,7 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/event_manager_test
-          CLERK_SECRET_KEY: "test_secret_key_placeholder"
+          CLERK_SECRET_KEY: "sk_test_placeholder_key_12345"  # MUST start with sk_
         run: |
           bin/rails db:create
           bin/rails db:schema:load
@@ -111,7 +111,7 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/event_manager_test
-          CLERK_SECRET_KEY: "test_secret_key_placeholder"
+          CLERK_SECRET_KEY: "sk_test_placeholder_key_12345"  # MUST start with sk_
         run: bundle exec rspec
 
   system-test:
@@ -148,7 +148,7 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/event_manager_test
-          CLERK_SECRET_KEY: "test_secret_key_placeholder"
+          CLERK_SECRET_KEY: "sk_test_placeholder_key_12345"
         run: |
           bin/rails db:create
           bin/rails db:schema:load
@@ -157,7 +157,7 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/event_manager_test
-          CLERK_SECRET_KEY: "test_secret_key_placeholder"
+          CLERK_SECRET_KEY: "sk_test_placeholder_key_12345"
         run: bundle exec rspec --pattern spec/system/**/*_spec.rb
 
       - name: Keep screenshots from failed system tests
