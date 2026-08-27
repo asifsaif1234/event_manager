@@ -63,4 +63,19 @@ class EventsController < ApplicationController
   rescue => e
     render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
+
+  private
+
+  def vote_message(action, vote_type)
+    case action.to_s
+    when "created"
+      "Vote added successfully"
+    when "removed"
+      "Vote removed successfully"
+    when "changed"
+      "Vote changed to #{vote_type}"
+    else
+      "Vote updated successfully"
+    end
+  end
 end
