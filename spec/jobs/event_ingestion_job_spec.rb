@@ -47,7 +47,7 @@ RSpec.describe EventIngestionJob, type: :job do
       it "logs the success messages" do
         allow_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:info)
         allow_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:error)
-        
+
         expect_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:info).with("Starting event ingestion job...")
         expect_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:info).with(/Ingestion completed/)
         expect_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:info).with("Created: 5, Updated: 3")
@@ -57,7 +57,7 @@ RSpec.describe EventIngestionJob, type: :job do
 
       it "does not log failure if failed count is 0" do
         allow_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:info)
-        
+
         expect_any_instance_of(ActiveSupport::BroadcastLogger).not_to receive(:info).with("Failed: 0")
 
         described_class.perform_now(limit: 10)
@@ -65,7 +65,7 @@ RSpec.describe EventIngestionJob, type: :job do
     end
 
     context "when the service returns a result with failures" do
-      let(:result) { { created: 2, updated: 0, failed: 3, errors: ["Error 1"] } }
+      let(:result) { { created: 2, updated: 0, failed: 3, errors: [ "Error 1" ] } }
 
       before do
         allow(service).to receive(:ingest).and_return(result)
@@ -73,7 +73,7 @@ RSpec.describe EventIngestionJob, type: :job do
 
       it "logs the failure count" do
         allow_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:info)
-        
+
         expect_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:info).with("Failed: 3")
 
         described_class.perform_now
@@ -87,7 +87,7 @@ RSpec.describe EventIngestionJob, type: :job do
 
       it "logs the error" do
         allow_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:error)
-        
+
         expect_any_instance_of(ActiveSupport::BroadcastLogger).to receive(:error).with("Ingestion job failed: API connection failed")
 
         expect {
