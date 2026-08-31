@@ -81,7 +81,7 @@ group :development, :test do
   gem "dotenv-rails"
 
   # For debugging
-  gem "pry", "~> 0.15.0"
+  gem "pry", "~> 0.16.0"
 
   # For test cases
   gem "rspec-rails", "~> 6.1.0"
