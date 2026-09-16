@@ -97,7 +97,6 @@ RSpec.describe "Voting on events", type: :system, js: true do
     end
 
     it "rolls back the optimistic UI update if the request fails" do
-
       allow_any_instance_of(VoteRecorder).to receive(:call)
         .and_raise(StandardError, "DB connection lost")
 

@@ -32,7 +32,6 @@ RSpec.describe "POST /events/:id/vote authorization", type: :request do
 
   context "when a session cookie exists but points at no real user (edge case)" do
     it "still does not persist a vote" do
-      
       get "/test_sign_in/999999"
 
       expect {
