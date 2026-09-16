@@ -418,11 +418,11 @@ GEM
     ruby_event_store-browser (3.0.0)
       rack
       ruby_event_store (= 3.0.0)
-    rubyzip (3.5.0)
+    rubyzip (3.6.0)
     rufus-scheduler (3.9.2)
       fugit (~> 1.1, >= 1.11.1)
     securerandom (0.4.1)
-    selenium-webdriver (4.47.0)
+    selenium-webdriver (4.49.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
@@ -723,10 +723,10 @@ CHECKSUMS
   ruby_event_store (3.0.0) sha256=d00509ad82e512218a0cda68e6999ceca6bea004b3e70159af7c00aac4959d34
   ruby_event_store-active_record (3.0.0) sha256=b901d75ff7d6da45852765315496969a3a33540c26a4c56780c7417d3c6b1bbc
   ruby_event_store-browser (3.0.0) sha256=1bb9de08340ab0e355bf332c1edc2f9a95c359d68d78a995a20bef30bf4ff436
-  rubyzip (3.5.0) sha256=f77c49d737a849b662f6ca4de473f31b4ecd8288f1c9f901a5c820641f0f8d7c
+  rubyzip (3.6.0) sha256=268994d44d62282d1cfd99bf10eae48d7267199158ad7ea3e1fee2da9458b695
   rufus-scheduler (3.9.2) sha256=55fa9e4db0ff69d7f38c804f17baba0c9bce5cba39984ae3c5cf6c039d1323b9
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
-  selenium-webdriver (4.47.0) sha256=67f915b8223d2133bbaa13e92fd98854175394f086e2036a9eff4f5561fd69e4
+  selenium-webdriver (4.49.0) sha256=b430f091a3cababb356b6f6132e0e4f385b017819355f563557e1537819edc89
   shoulda-matchers (6.5.0) sha256=ef6b572b2bed1ac4aba6ab2c5ff345a24b6d055a93a3d1c3bfc86d9d499e3f44
   sidekiq (8.1.7) sha256=91ad48c7e6c32e1846bf1d5b74c27948758049b93fed0cb539f8d586c7de3415
   sidekiq-scheduler (6.0.2) sha256=1065f1a989e750849de1d23d1f34338c104ed6ec5a6dc22a2620c5af54a2d6fc
