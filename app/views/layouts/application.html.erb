@@ -17,6 +17,10 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    <script async crossorigin="anonymous"
+      data-clerk-publishable-key="<%= ENV["CLERK_PUBLISHABLE_KEY"] %>"
+      src="https://guiding-grouper-6633.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js">
+    </script>
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>

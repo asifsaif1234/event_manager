@@ -23,5 +23,16 @@ module EventManager
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    if Rails.env.test?
+      Rails.application.config.after_initialize do
+        if defined?(Clerk::Rack::Middleware)
+          Clerk::Rack::Middleware.class_eval do
+            def call(env)
+              @app.call(env)
+            end
+          end
+        end
+      end
+    end
   end
 end

@@ -10,15 +10,17 @@ class VoteRecorder
     @user = user
     @event = event
     @vote_type = vote_type
+    @retried   = false
   end
 
   def call
+    raise ArgumentError, "User required" if user.nil?
     raise InvalidVoteType, "Invalid vote type" unless VALID_TYPES.include?(vote_type)
 
     action = nil
 
     ActiveRecord::Base.transaction do
-      existing = user.votes.find_by(event: event)
+      existing = user.votes.lock.find_by(event: event)
 
       if existing.nil?
         Vote.create!(user: user, event: event, vote_type: vote_type)
@@ -36,6 +38,11 @@ class VoteRecorder
     end
 
     Result.new(action: action, event: event, user_vote: event.user_vote(user)&.vote_type)
+  rescue ActiveRecord::RecordNotUnique
+    raise if @retried
+
+    @retried = true
+    retry
   end
 
   private

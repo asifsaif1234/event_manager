@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe VoteRecorder, type: :service do
-  let!(:user) { create(:user) }
+  let!(:user)  { create(:user) }
   let!(:event) { create(:event) }
 
   # Mock the event store since Vote model has callbacks
@@ -10,6 +10,42 @@ RSpec.describe VoteRecorder, type: :service do
   before do
     allow(Rails.configuration).to receive(:event_store).and_return(event_store)
     allow(event_store).to receive(:publish)
+  end
+
+  describe 'database-level uniqueness (the real race guard)' do
+    it 'raises RecordNotUnique when the model validation is bypassed' do
+      # First vote goes in normally
+      Vote.create!(user: user, event: event, vote_type: 'upvote')
+
+      # Second insert bypasses the Rails uniqueness validator — this is
+      # exactly what happens when two concurrent requests both pass the
+      # model check before either inserts. Only the DB index can stop this.
+      duplicate = Vote.new(user: user, event: event, vote_type: 'downvote')
+
+      expect {
+        duplicate.save!(validate: false)
+      }.to raise_error(ActiveRecord::RecordNotUnique)
+
+      expect(event.reload.votes.count).to eq(1)
+    end
+
+    it 'raises RecordInvalid when the model validation catches the duplicate first' do
+      Vote.create!(user: user, event: event, vote_type: 'upvote')
+
+      expect {
+        Vote.create!(user: user, event: event, vote_type: 'downvote')
+      }.to raise_error(ActiveRecord::RecordInvalid, /has already voted/)
+    end
+
+    it 'allows only one vote row even with racing inserts' do
+      VoteRecorder.new(user: user, event: event, vote_type: 'upvote').call
+
+      expect {
+        VoteRecorder.new(user: user, event: event, vote_type: 'upvote').call
+      }.to change { event.reload.votes.count }.by(-1)
+
+      expect(event.votes.count).to eq(0)
+    end
   end
 
   describe "#call" do

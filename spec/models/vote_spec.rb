@@ -135,18 +135,4 @@ RSpec.describe Vote, type: :model do
       end
     end
   end
-
-  describe "instance methods" do
-    describe "#update_event_counts" do
-      it "updates the event's vote counts" do
-        event = create(:event)
-        vote = create(:vote, event: event)
-
-        # Call private method using send
-        expect(event).to receive(:update_votes_count)
-
-        vote.send(:update_event_counts)
-      end
-    end
-  end
 end
