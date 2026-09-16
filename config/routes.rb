@@ -3,7 +3,8 @@ Rails.application.routes.draw do
 
   get "/sign_in", to: redirect("https://guiding-grouper-6633.accounts.dev/sign-in")
   get "/sign_up", to: redirect("https://guiding-grouper-6633.accounts.dev/sign-up")
-  match "/sign_out", to: "sessions#destroy", via: [ :get, :delete ]
+  # config/routes.rb
+  delete "/sign-out", to: "sessions#destroy"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -31,4 +32,8 @@ Rails.application.routes.draw do
   end
   # For test caese
   resource :session, only: [ :create, :destroy ]
+  if Rails.env.test?
+    get "/test_sign_in/:user_id", to: "test_sessions#create", as: :test_sign_in
+    get "/test_sign_out",         to: "test_sessions#destroy", as: :test_sign_out
+  end
 end

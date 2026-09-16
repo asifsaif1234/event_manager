@@ -12,20 +12,40 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    if clerk.session
-      require "net/http"
+    revoke_clerk_session
 
-      session_id = clerk.session["sid"]
-      uri = URI("https://api.clerk.com/v1/sessions/#{session_id}/revoke")
+    reset_session
 
-      request = Net::HTTP::Post.new(uri)
-      request["Authorization"] = "Bearer #{ENV['CLERK_SECRET_KEY']}"
+    redirect_to root_path,
+                notice: "Signed out successfully"
+  end
 
-      Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-        http.request(request)
-      end
+  private
+
+  def revoke_clerk_session
+    clerk_session = clerk&.session
+    return if clerk_session.blank?
+
+    session_id = clerk_session["sid"]
+    return if session_id.blank?
+
+    require "net/http"
+
+    uri = URI(
+      "https://api.clerk.com/v1/sessions/#{session_id}/revoke"
+    )
+
+    request = Net::HTTP::Post.new(uri)
+
+    request["Authorization"] =
+      "Bearer #{ENV.fetch("CLERK_SECRET_KEY")}"
+
+    Net::HTTP.start(
+      uri.hostname,
+      uri.port,
+      use_ssl: true
+    ) do |http|
+      http.request(request)
     end
-
-    redirect_to root_path, notice: "Signed out successfully"
   end
 end

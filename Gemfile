@@ -64,6 +64,9 @@ gem "clerk-sdk-ruby", require: "clerk"
 # Event Store
 gem "rails_event_store", "~> 3.0.0"
 
+# For test cases
+gem "webmock", "~> 3.26"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -101,4 +104,5 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "rack_session_access"
 end

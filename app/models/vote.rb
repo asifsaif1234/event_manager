@@ -60,8 +60,4 @@ class Vote < ApplicationRecord
   rescue => e
     Rails.logger.error "Failed to publish vote removed event: #{e.message}"
   end
-
-  def update_event_counts
-    event.update_votes_count
-  end
 end
