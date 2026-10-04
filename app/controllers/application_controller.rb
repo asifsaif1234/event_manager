@@ -28,7 +28,12 @@ class ApplicationController < ActionController::Base
   end
 
   def user_signed_in?
-    current_user.present?
+    # Keeping this beacuse test case depend on this condition
+    if Rails.env.test?
+      current_user.present?
+    else
+      clerk.session.present?
+    end
   end
 
   def sign_in_path

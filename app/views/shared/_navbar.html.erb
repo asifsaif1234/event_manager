@@ -9,14 +9,16 @@
       <div class="flex items-center space-x-4">
         <% if user_signed_in? %>
           <span class="text-sm"><%= current_user&.first_name || "User" %></span>
-          <button 
-            type="button"
-            class="cursor-pointer" 
-            id="sign-out"
-            
-          >
-            Sign Out
-          </button>
+          <div data-controller="sign-out">
+            <button
+              type="button"
+              id="sign-out"
+              data-action="click->sign-out#logout"
+              data-sign-out-target="button"
+              class="cursor-pointer">
+              Sign out
+            </button>
+          </div>
         <% else %>
           <%= link_to "Sign In", sign_in_path, class: "text-blue-600" %>
           <%= link_to "Sign Up", sign_up_path, class: "px-4 py-2 bg-blue-600 text-white rounded" %>
@@ -26,44 +28,5 @@
   </div>
 </nav>
 
-<script type="text/javascript">
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔍 Checking for Clerk...');
-    console.log('🔍 Clerk object:', window.Clerk);
-    
-    const signOutButton = document.getElementById('sign-out');
-    
-    if (!signOutButton) {
-      console.error('❌ Sign out button not found!');
-      return;
-    }
 
-    console.log('✅ Sign out button found');
-
-    signOutButton.addEventListener('click', async function(event) {
-      event.preventDefault();
-      
-      console.log('🔵 Sign out clicked');
-      console.log('🔍 Clerk available:', !!window.Clerk);
-      
-      // Check if Clerk is available
-      if (!window.Clerk) {
-        console.error('❌ Clerk is not initialized');
-        // Force redirect
-        window.location.href = '/';
-        return;
-      }
-
-      try {
-        console.log('🔄 Calling Clerk.signOut...');
-        await window.Clerk.signOut({ redirectUrl: '/' });
-        console.log('✅ Sign out successful');
-      } catch (error) {
-        console.error('❌ Sign out error:', error);
-        // Fallback redirect
-        window.location.href = '/';
-      }
-    });
-  });
-</script>
 
